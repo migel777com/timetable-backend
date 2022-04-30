@@ -1,0 +1,16 @@
+{
+    "port" : 4003,
+    "env" : "development",
+    "db" : {
+        "dsn":"puck:tidolbaeb?@tcp(185.22.64.115:3306)/timetable?parseTime=true",
+        "MaxOpenConns":25,
+        "MaxIdleConns":25,
+        "MaxIdleTime":"15m"
+    },
+    "jwtkey": "gingingin",
+    "limiter":{
+        "rps":2,
+        "burst":4,
+        "enabled":true
+    }
+}
