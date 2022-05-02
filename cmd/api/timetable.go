@@ -1,7 +1,6 @@
 package main
 
 import (
-	"gin-api-template/internal/data"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -20,12 +19,12 @@ func (app *application) GetTimetable(c *gin.Context){
 		return
 	}
 
-	timetableMap := make(map[string][]*data.Timetable)
+	//timetableMap := make(map[string][]*data.Timetable)
+	//
+	//for _, item := range timetable {
+	//	timetableMap[item.ClasstimeDay] = append(timetableMap[item.ClasstimeDay], item)
+	//}
 
-	for _, item := range timetable {
-		timetableMap[item.ClasstimeDay] = append(timetableMap[item.ClasstimeDay], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload":timetableMap})
+	c.JSON(http.StatusOK, gin.H{"payload":timetable})
 	return
 }
