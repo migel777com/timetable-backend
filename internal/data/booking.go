@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -28,6 +29,64 @@ type BookingModel struct {
 func (m *BookingModel) GetAll() ([]*Booking, error){
 	stmt := `SELECT id, room, room_id, reserver, reserver_id, reserver_info, day, date, start_time, end_time, reason, confirmed, created_time FROM booking ORDER BY date;`
 	rows, err := m.DB.Query(stmt)
+	if err!=nil{
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bookings []*Booking
+	for rows.Next() {
+		b := &Booking{}
+		err = rows.Scan(&b.Id, &b.Room, &b.RoomId, &b.Reserver, &b.ReserverId, &b.ReserverInfo, &b.Day, &b.Date, &b.StartTime, &b.EndTime, &b.Reason, &b.Confirmed, &b.CreatedTime)
+		if err!=nil{
+			return nil, err
+		}
+		bookings = append(bookings, b)
+	}
+
+	if len(bookings)==0{
+		return nil, sql.ErrNoRows
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+func (m *BookingModel) GetAllByRoom(roomId int64) ([]*Booking, error){
+	stmt := `SELECT id, room, room_id, reserver, reserver_id, reserver_info, day, date, start_time, end_time, reason, confirmed, created_time FROM booking WHERE room_id = ? ORDER BY date;`
+	rows, err := m.DB.Query(stmt, roomId)
+	if err!=nil{
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bookings []*Booking
+	for rows.Next() {
+		b := &Booking{}
+		err = rows.Scan(&b.Id, &b.Room, &b.RoomId, &b.Reserver, &b.ReserverId, &b.ReserverInfo, &b.Day, &b.Date, &b.StartTime, &b.EndTime, &b.Reason, &b.Confirmed, &b.CreatedTime)
+		if err!=nil{
+			return nil, err
+		}
+		bookings = append(bookings, b)
+	}
+
+	if len(bookings)==0{
+		return nil, sql.ErrNoRows
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+func (m *BookingModel) GetAllByReserver(reserverId int64) ([]*Booking, error){
+	stmt := `SELECT id, room, room_id, reserver, reserver_id, reserver_info, day, date, start_time, end_time, reason, confirmed, created_time FROM booking WHERE reserver_id = ? ORDER BY date;`
+	rows, err := m.DB.Query(stmt, reserverId)
 	if err!=nil{
 		return nil, err
 	}
@@ -126,4 +185,36 @@ func (m *BookingModel) Insert(room, reserver, reserverInfo, day, startTime, endT
 	}
 
 	return int(id), nil
+}
+
+func (m *BookingModel) Confirm(id int64) error {
+	stmt := `UPDATE booking SET confirmed = 1 WHERE id = ?`
+
+	result, err := m.DB.Exec(stmt, id)
+
+	if err != nil {
+		return err
+	}
+
+	if temp, _ := result.RowsAffected(); temp == 0 {
+		return errors.New("no affected rows")
+	}
+
+	return nil
+}
+
+func (m *BookingModel) Delete(id int64) error {
+	stmt := `DELETE FROM booking WHERE id = ?;`
+
+	result, err := m.DB.Exec(stmt, id)
+
+	if err != nil {
+		return err
+	}
+
+	if temp, _ := result.RowsAffected(); temp == 0 {
+		return errors.New("no affected rows")
+	}
+
+	return nil
 }

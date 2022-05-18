@@ -38,9 +38,25 @@ func (app *application) routes() http.Handler {
 
 	router.GET("/healthcheck", app.Healthcheck)
 
-	router.GET("/getTimetable/group/:groupId", app.GetGroupTimetable)
-	router.GET("/getTimetable/tutor/:tutorId", app.GetTutorTimetable)
-	router.GET("/getTimetable/room/:roomId", app.GetRoomTimetable)
+	timetable := router.Group("timetable")
+	{
+		timetable.GET("/group/:groupId", app.GetGroupTimetable)
+		timetable.GET("/tutor/:tutorId", app.GetTutorTimetable)
+		timetable.GET("/room/:roomId", app.GetRoomTimetable)
+	}
+
+	booking := router.Group("/booking")
+	{
+		booking.GET("/room/:roomId", app.GetRoomBooking)
+		booking.GET("/reserver/:reserverId", app.GetReserverBooking)
+
+		booking.GET("/requests", app.GetBookingRequests)
+		booking.POST("/create", app.BookRoom)
+		booking.PATCH("/confirm/:bookingId", app.ConfirmBooking)
+		booking.PATCH("/reject/:bookingId", app.ConfirmBooking)
+	}
+
+
 
 	users := router.Group("/users")
 	{
