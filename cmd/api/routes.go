@@ -38,7 +38,9 @@ func (app *application) routes() http.Handler {
 
 	router.GET("/healthcheck", app.Healthcheck)
 
-	router.GET("/getTimetable/:id", app.GetTimetable)
+	router.GET("/getTimetable/group/:groupId", app.GetGroupTimetable)
+	router.GET("/getTimetable/tutor/:tutorId", app.GetTutorTimetable)
+	router.GET("/getTimetable/room/:roomId", app.GetRoomTimetable)
 
 	users := router.Group("/users")
 	{
