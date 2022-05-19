@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"strings"
+	"time"
 )
 
 func (app *application) GetAllBooking(c *gin.Context) {
@@ -79,7 +79,7 @@ func (app *application) GetReserverBooking(c *gin.Context) {
 }
 
 func (app *application) GetBookingRequests(c *gin.Context) {
-	booking, err := app.models.Booking.GetAllConfirmed()
+	booking, err := app.models.Booking.GetAllRequests()
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
 			app.NotFoundResponse(err, c)
@@ -175,26 +175,14 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	start := strings.Split(input.StartTime, ":")
-	end := strings.Split(input.EndTime, ":")
-
-	inputStartH, _ := strconv.ParseInt(start[0], 10, 64)
-	inputStartM, _ := strconv.ParseInt(start[1], 10, 64)
-
-	inputEndH, _ := strconv.ParseInt(end[0], 10, 64)
-	inputEndM, _ := strconv.ParseInt(end[1], 10, 64)
+	inputStart, _ := time.Parse("15:04", input.StartTime)
+	inputEnd, _ := time.Parse("15:04", input.EndTime)
 
 	for _, item := range roomBooking {
-		start = strings.Split(item.StartTime, ":")
-		end = strings.Split(item.EndTime, ":")
+		start, _ := time.Parse("15:04", item.StartTime)
+		end, _ := time.Parse("15:04", item.EndTime)
 
-		startH, _ := strconv.ParseInt(start[0], 10, 64)
-		startM, _ := strconv.ParseInt(start[1], 10, 64)
-
-		endH, _ := strconv.ParseInt(end[0], 10, 64)
-		endM, _ := strconv.ParseInt(end[1], 10, 64)
-
-		if ((inputStartH >= startH && inputStartM >= startM) && (inputStartH < endH && inputStartM < endM)) || ((inputEndH >= startH && inputEndM >= startM) && (inputEndH < endH && inputEndM < endM)) {
+		if (inputStart.After(start) && inputStart.Before(end)) || (inputEnd.After(start) && inputEnd.Before(end)) || (inputStart.Before(start) && inputEnd.After(end)) {
 			app.BadRequest(nil, c)
 			return
 		}

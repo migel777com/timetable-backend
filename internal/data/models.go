@@ -19,6 +19,7 @@ type Models struct {
 	Files FileModel
 	Timetables TimetableModel
 	Booking BookingModel
+	Extras ExtrasModel
 }
 
 func NewModels(db *sql.DB) Models {
@@ -27,5 +28,6 @@ func NewModels(db *sql.DB) Models {
 		FileModel{db},
 		TimetableModel{db},
 		BookingModel{db},
+		ExtrasModel{db},
 	}
 }

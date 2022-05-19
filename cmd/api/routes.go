@@ -38,6 +38,11 @@ func (app *application) routes() http.Handler {
 
 	router.GET("/healthcheck", app.Healthcheck)
 
+	router.GET("/group", app.GetAllGroups)
+	router.GET("/teacher", app.GetAllTeachers)
+	router.GET("/room", app.GetAllRooms)
+	router.GET("/room/:roomId", app.GetRoom)
+
 	timetable := router.Group("timetable")
 	{
 		timetable.GET("/group/:groupId", app.GetGroupTimetable)
@@ -47,13 +52,15 @@ func (app *application) routes() http.Handler {
 
 	booking := router.Group("/booking")
 	{
+		booking.GET("", app.GetAllBooking)
+
 		booking.GET("/room/:roomId", app.GetRoomBooking)
 		booking.GET("/reserver/:reserverId", app.GetReserverBooking)
 
 		booking.GET("/requests", app.GetBookingRequests)
 		booking.POST("/create", app.BookRoom)
 		booking.PATCH("/confirm/:bookingId", app.ConfirmBooking)
-		booking.PATCH("/reject/:bookingId", app.ConfirmBooking)
+		booking.PATCH("/reject/:bookingId", app.RejectBooking)
 	}
 
 
