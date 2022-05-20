@@ -55,7 +55,7 @@ func (app *application) GetRoomBooking(c *gin.Context) {
 }
 
 func (app *application) GetReserverBooking(c *gin.Context) {
-	id, _ := strconv.ParseInt(c.Param("reserverId"), 10, 64)
+	id := c.Param("reserverId")
 
 	booking, err := app.models.Booking.GetAllByReserver(id)
 	if err!=nil{

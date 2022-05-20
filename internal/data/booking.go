@@ -11,7 +11,7 @@ type Booking struct {
 	Room string `json:"room"`
 	RoomId int64 `json:"room_id"`
 	Reserver string `json:"reserver"`
-	ReserverId int64 `json:"reserver_id"`
+	ReserverId string `json:"reserver_id"`
 	ReserverInfo string `json:"reserver_info"`
 	Day string `json:"day"`
 	Date time.Time `json:"date"`
@@ -84,7 +84,7 @@ func (m *BookingModel) GetAllByRoom(roomId int64) ([]*Booking, error){
 	return bookings, nil
 }
 
-func (m *BookingModel) GetAllByReserver(reserverId int64) ([]*Booking, error){
+func (m *BookingModel) GetAllByReserver(reserverId string) ([]*Booking, error){
 	stmt := `SELECT id, room, room_id, reserver, reserver_id, reserver_info, day, date, start_time, end_time, reason, confirmed, created_time FROM booking WHERE reserver_id = ? ORDER BY date;`
 	rows, err := m.DB.Query(stmt, reserverId)
 	if err!=nil{
@@ -171,7 +171,7 @@ func (m *BookingModel) GetAllRequests() ([]*Booking, error){
 	return bookings, nil
 }
 
-func (m *BookingModel) Insert(room, reserver, reserverInfo, day, startTime, endTime, reason string, roomId, reserverId int64, date time.Time) (int, error) {
+func (m *BookingModel) Insert(room, reserver, reserverInfo, day, startTime, endTime, reason string, roomId int64, reserverId string, date time.Time) (int, error) {
 	stmt := `INSERT INTO booking (room, room_id, reserver, reserver_id, reserver_info, day, date, start_time, end_time, reason) VALUES (?,?,?,?,?,?,?,?,?,?)`
 
 	result, err := m.DB.Exec(stmt, room, roomId, reserver, reserverId, reserverInfo, day, date, startTime, endTime, reason)
