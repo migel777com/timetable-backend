@@ -7,7 +7,7 @@
         "MaxIdleConns":25,
         "MaxIdleTime":"15m"
     },
-    "jwtkey": "gingingin",
+    "jwtkey": "delilshugarbek",
     "limiter":{
         "rps":2,
         "burst":4,

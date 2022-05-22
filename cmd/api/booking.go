@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -122,6 +123,73 @@ func (app *application) GetConfirmedBooking(c *gin.Context) {
 	return
 }
 
+func (app *application) GetDateTimeBooking(c *gin.Context) {
+	var input data.Booking
+
+	if err := c.BindJSON(&input); err != nil {
+		app.serverErrorResponse(err, c)
+	}
+
+	var noRooms []string
+
+	inputStart, _ := time.Parse("15:04", input.StartTime)
+	inputEnd, _ := time.Parse("15:04", input.EndTime)
+
+	timetable, err := app.models.Timetables.GetByWeekDay("d"+strconv.Itoa(int(input.Date.Weekday())))
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			//app.NotFoundResponse(err, c)
+			//return
+		} else {
+			app.serverErrorResponse(err, c)
+			return
+		}
+	}
+
+	for _, item := range timetable {
+		start, _ := time.Parse("15:04", item.ClasstimeTime)
+		end := start.Add(time.Minute*50)
+
+		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
+			noRooms = append(noRooms, strconv.Itoa(int(item.RoomId)))
+		}
+	}
+
+	booking, err := app.models.Booking.GetAllByDate(input.Date)
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			//app.NotFoundResponse(err, c)
+			//return
+		} else {
+			app.serverErrorResponse(err, c)
+			return
+		}
+	}
+
+	for _, item := range booking {
+		start, _ := time.Parse("15:04", item.StartTime)
+		end, _ := time.Parse("15:04", item.EndTime)
+
+		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
+			noRooms = append(noRooms, strconv.Itoa(int(item.RoomId)))
+		}
+	}
+
+	rooms, err := app.models.Extras.GetFreeRooms(strings.Join(noRooms, ","))
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			app.NotFoundResponse(err, c)
+			return
+		} else {
+			app.serverErrorResponse(err, c)
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"payload":rooms})
+	return
+}
+
 func (app *application) ConfirmBooking(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("bookingId"), 10, 64)
 
@@ -165,6 +233,30 @@ func (app *application) BookRoom(c *gin.Context) {
 		app.serverErrorResponse(err, c)
 	}
 
+	inputStart, _ := time.Parse("15:04", input.StartTime)
+	inputEnd, _ := time.Parse("15:04", input.EndTime)
+
+	timetable, err := app.models.Timetables.GetByWeekDay("d"+strconv.Itoa(int(input.Date.Weekday())))
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			//app.NotFoundResponse(err, c)
+			//return
+		} else {
+			app.serverErrorResponse(err, c)
+			return
+		}
+	}
+
+	for _, item := range timetable {
+		start, _ := time.Parse("15:04", item.ClasstimeTime)
+		end := start.Add(time.Minute*50)
+
+		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
+			app.BadRequest(nil, c)
+			return
+		}
+	}
+
 	roomBooking, err := app.models.Booking.GetAllByRoom(input.RoomId)
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
@@ -175,14 +267,11 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	inputStart, _ := time.Parse("15:04", input.StartTime)
-	inputEnd, _ := time.Parse("15:04", input.EndTime)
-
 	for _, item := range roomBooking {
 		start, _ := time.Parse("15:04", item.StartTime)
 		end, _ := time.Parse("15:04", item.EndTime)
 
-		if (inputStart.After(start) && inputStart.Before(end)) || (inputEnd.After(start) && inputEnd.Before(end)) || (inputStart.Before(start) && inputEnd.After(end)) {
+		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
 			app.BadRequest(nil, c)
 			return
 		}

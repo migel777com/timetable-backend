@@ -6,7 +6,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"log"
-	"time"
 )
 
 func HashPassword(password string) (string, error) {
@@ -30,8 +29,7 @@ func GenerateJWT(jwtkey []byte, user *data.User) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	claims["email"] = user.Email
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	claims["organization"] = user.Organization
 
 	tokenString, err := token.SignedString(jwtkey)
 

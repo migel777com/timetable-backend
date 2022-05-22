@@ -53,32 +53,27 @@ func (app *application) routes() http.Handler {
 	booking := router.Group("/booking")
 	{
 		booking.GET("", app.GetAllBooking)
+		booking.GET("/datetime", app.GetDateTimeBooking)
 
 		booking.GET("/room/:roomId", app.GetRoomBooking)
 		booking.GET("/reserver/:reserverId", app.GetReserverBooking)
 
 		booking.GET("/requests", app.GetBookingRequests)
-		booking.POST("/create", app.BookRoom)
-		booking.PATCH("/confirm/:bookingId", app.ConfirmBooking)
-		booking.PATCH("/reject/:bookingId", app.RejectBooking)
+
+		secured := booking.Group("", app.auth())
+		{
+			secured.POST("/create", app.BookRoom)
+			secured.PATCH("/confirm/:bookingId", app.ConfirmBooking)
+			secured.PATCH("/reject/:bookingId", app.RejectBooking)
+		}
 	}
 
-
-
-	users := router.Group("/users")
+	login := router.Group("/login")
 	{
-		login := users.Group("/login")
-		{
-			login.POST("/email", app.EmailAuth)
-		}
-
-		register := users.Group("/register")
-		{
-			register.POST("/new", app.UserCreate)
-		}
-
-		users.GET("/userdata", app.auth(), app.UserData)
+		login.POST("/office", app.OfficeAuth)
 	}
+	//users.GET("/userdata", app.auth(), app.UserData)
+
 
 	files := router.Group("/files")
 	{

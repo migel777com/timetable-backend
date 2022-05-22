@@ -8,9 +8,9 @@ import (
 
 func (app *application) auth() gin.HandlerFunc {
 	return func (c *gin.Context) {
-		if c.Request.Header["Akis-Jwt-Token"] != nil {
+		if c.Request.Header["Gao-Jwt-Token"] != nil {
 
-			token, err := jwt.Parse(c.Request.Header["Akis-Jwt-Token"][0], func(token *jwt.Token) (interface{}, error) {
+			token, err := jwt.Parse(c.Request.Header["Gao-Jwt-Token"][0], func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, errors.New("SigningMethodHMAC checking error")
 				}
@@ -23,11 +23,20 @@ func (app *application) auth() gin.HandlerFunc {
 			}
 
 			if token.Valid {
-				c.Next()
+				claims, _ := extractClaims(app.config.Jwtkey, c.Request.Header["Gao-Jwt-Token"][0])
+				organization := claims["organization"]
+
+				if organization == "Astana IT University" {
+					c.Next()
+				} else {
+					app.InvalidCredentials(nil, c)
+					return
+				}
 			}
 		} else {
 
 			app.NotAuthorized(nil, c)
+			c.Abort()
 			return
 		}
 	}

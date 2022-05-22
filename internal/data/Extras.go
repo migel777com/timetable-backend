@@ -114,6 +114,35 @@ func (m *ExtrasModel) GetAllRooms() ([]*Room, error){
 	return rooms, nil
 }
 
+func (m *ExtrasModel) GetFreeRooms(noRooms string) ([]*Room, error){
+	stmt := `SELECT id, code, name, floor, seats, type FROM schedule_room WHERE id NOT IN (?) ORDER BY id;`
+	rows, err := m.DB.Query(stmt, noRooms)
+	if err!=nil{
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rooms []*Room
+	for rows.Next() {
+		r := &Room{}
+		err = rows.Scan(&r.Id, &r.Code, &r.Name, &r.Floor, &r.Seats, &r.Type)
+		if err!=nil{
+			return nil, err
+		}
+		rooms = append(rooms, r)
+	}
+
+	if len(rooms)==0{
+		return nil, sql.ErrNoRows
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return rooms, nil
+}
+
 func (m *ExtrasModel) GetRoom(id int64) (*Room, error) {
 	stmt := `SELECT id, code, name, floor, seats, type FROM schedule_room WHERE id = ?;`
 	rows := m.DB.QueryRow(stmt, id)
