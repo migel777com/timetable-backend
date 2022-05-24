@@ -39,7 +39,7 @@ func (app *application) routes() http.Handler {
 	router.GET("/healthcheck", app.Healthcheck)
 
 	router.GET("/group", app.GetAllGroups)
-	router.POST("/teacher", app.GetAllTeachers)
+	router.GET("/teacher", app.GetAllTeachers)
 	router.GET("/room", app.GetAllRooms)
 	router.GET("/room/:roomId", app.GetRoom)
 
@@ -53,7 +53,7 @@ func (app *application) routes() http.Handler {
 	booking := router.Group("/booking")
 	{
 		booking.GET("", app.GetAllBooking)
-		booking.GET("/datetime", app.GetDateTimeBooking)
+		booking.POST("/datetime", app.GetDateTimeBooking)
 
 		booking.GET("/room/:roomId", app.GetRoomBooking)
 		booking.GET("/reserver/:reserverId", app.GetReserverBooking)
