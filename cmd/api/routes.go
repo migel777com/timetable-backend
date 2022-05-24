@@ -39,7 +39,7 @@ func (app *application) routes() http.Handler {
 	router.GET("/healthcheck", app.Healthcheck)
 
 	router.GET("/group", app.GetAllGroups)
-	router.GET("/teacher", app.GetAllTeachers)
+	router.POST("/teacher", app.GetAllTeachers)
 	router.GET("/room", app.GetAllRooms)
 	router.GET("/room/:roomId", app.GetRoom)
 
