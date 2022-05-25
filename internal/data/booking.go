@@ -182,7 +182,7 @@ func (m *BookingModel) GetAllConfirmed() ([]*Booking, error){
 	var bookings []*Booking
 	for rows.Next() {
 		b := &Booking{}
-		err = rows.Scan(&b.Id, &b.Room, &b.RoomId, &b.Reserver, &b.ReserverId, &b.ReserverInfo, &b.Day, &b.Date, &b.StartTime, &b.Reason, &b.EndTime, &b.CreatedTime)
+		err = rows.Scan(&b.Id, &b.Room, &b.RoomId, &b.Reserver, &b.ReserverId, &b.ReserverInfo, &b.Day, &b.Date, &b.StartTime, &b.EndTime, &b.Reason, &b.CreatedTime)
 		if err!=nil{
 			return nil, err
 		}
