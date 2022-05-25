@@ -58,6 +58,7 @@ func (app *application) routes() http.Handler {
 		booking.POST("/reserver/between/:reserverId", app.GetReserverBetweenBooking)
 
 		booking.GET("/requests", app.GetBookingRequests)
+		booking.GET("/confirm", app.GetConfirmedBooking)
 
 		secured := booking.Group("", app.auth())
 		{

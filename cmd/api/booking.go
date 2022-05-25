@@ -12,8 +12,8 @@ import (
 
 func (app *application) GetAllBooking(c *gin.Context) {
 	booking, err := app.models.Booking.GetAll()
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -28,7 +28,7 @@ func (app *application) GetAllBooking(c *gin.Context) {
 		bookingMap[item.Day] = append(bookingMap[item.Day], item)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
 	return
 }
 
@@ -44,26 +44,26 @@ func (app *application) GetRoomBooking(c *gin.Context) {
 	currentYear, currentMonth, _ := input.Date.Date()
 	currentLocation := input.Date.Location()
 
-	firstOfMonth := time.Date(currentYear, currentMonth, 1,0,0,0, 0, currentLocation)
-	lastOfMonth := firstOfMonth.AddDate(0,1,-1)
+	firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
 
 	for {
 		if firstOfMonth.Weekday() == time.Monday {
 			break
 		}
-		firstOfMonth = firstOfMonth.AddDate(0,0,-1)
+		firstOfMonth = firstOfMonth.AddDate(0, 0, -1)
 	}
 
 	for {
 		if lastOfMonth.Weekday() == time.Sunday {
 			break
 		}
-		lastOfMonth = lastOfMonth.AddDate(0,0,1)
+		lastOfMonth = lastOfMonth.AddDate(0, 0, 1)
 	}
 
 	booking, err := app.models.Booking.GetAllByRoom(id, firstOfMonth, lastOfMonth)
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -78,7 +78,7 @@ func (app *application) GetRoomBooking(c *gin.Context) {
 		bookingMap[item.Day] = append(bookingMap[item.Day], item)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
 	return
 }
 
@@ -86,8 +86,8 @@ func (app *application) GetReserverBooking(c *gin.Context) {
 	id := c.Param("reserverId")
 
 	booking, err := app.models.Booking.GetAllByReserver(id)
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -102,7 +102,7 @@ func (app *application) GetReserverBooking(c *gin.Context) {
 		bookingMap[item.Day] = append(bookingMap[item.Day], item)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
 	return
 }
 
@@ -118,26 +118,26 @@ func (app *application) GetReserverBetweenBooking(c *gin.Context) {
 	currentYear, currentMonth, _ := input.Date.Date()
 	currentLocation := input.Date.Location()
 
-	firstOfMonth := time.Date(currentYear, currentMonth, 1,0,0,0, 0, currentLocation)
-	lastOfMonth := firstOfMonth.AddDate(0,1,-1)
+	firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
 
 	for {
 		if firstOfMonth.Weekday() == time.Monday {
 			break
 		}
-		firstOfMonth = firstOfMonth.AddDate(0,0,-1)
+		firstOfMonth = firstOfMonth.AddDate(0, 0, -1)
 	}
 
 	for {
 		if lastOfMonth.Weekday() == time.Sunday {
 			break
 		}
-		lastOfMonth = lastOfMonth.AddDate(0,0,1)
+		lastOfMonth = lastOfMonth.AddDate(0, 0, 1)
 	}
 
 	booking, err := app.models.Booking.GetAllBetweenByReserver(id, firstOfMonth, lastOfMonth)
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -152,14 +152,14 @@ func (app *application) GetReserverBetweenBooking(c *gin.Context) {
 		bookingMap[item.Day] = append(bookingMap[item.Day], item)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
 	return
 }
 
 func (app *application) GetBookingRequests(c *gin.Context) {
 	booking, err := app.models.Booking.GetAllRequests()
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -174,14 +174,14 @@ func (app *application) GetBookingRequests(c *gin.Context) {
 	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
 	//}
 
-	c.JSON(http.StatusOK, gin.H{"payload":booking})
+	c.JSON(http.StatusOK, gin.H{"payload": booking})
 	return
 }
 
 func (app *application) GetConfirmedBooking(c *gin.Context) {
 	booking, err := app.models.Booking.GetAllConfirmed()
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -196,7 +196,7 @@ func (app *application) GetConfirmedBooking(c *gin.Context) {
 	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
 	//}
 
-	c.JSON(http.StatusOK, gin.H{"payload":booking})
+	c.JSON(http.StatusOK, gin.H{"payload": booking})
 	return
 }
 
@@ -212,9 +212,9 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 	inputStart, _ := time.Parse("15:04", input.StartTime)
 	inputEnd, _ := time.Parse("15:04", input.EndTime)
 
-	timetable, err := app.models.Timetables.GetByWeekDay("d"+strconv.Itoa(int(input.Date.Weekday())))
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	timetable, err := app.models.Timetables.GetByWeekDay("d" + strconv.Itoa(int(input.Date.Weekday())))
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			//app.NotFoundResponse(err, c)
 			//return
 		} else {
@@ -223,27 +223,29 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 		}
 	}
 
-	days, err := app.models.Timetables.GetDateTimeData(timetable[0].ScheduleBlockId)
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
-			app.NotAcceptable(err, c)
-			return
-		}
-		app.serverErrorResponse(err, c)
-		return
-	}
-
-	dateTimeData := data.DateTimeData{}
-	err = json.Unmarshal([]byte(days), &dateTimeData)
-	if err != nil {
-		app.serverErrorResponse(err, c)
-		return
-	}
-
 	timeMap := make(map[string]*data.Time)
 
-	for _, t := range dateTimeData.Time {
-		timeMap[t.Id] = t
+	if timetable != nil {
+		days, err := app.models.Timetables.GetDateTimeData(timetable[0].ScheduleBlockId)
+		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				app.NotAcceptable(err, c)
+				return
+			}
+			app.serverErrorResponse(err, c)
+			return
+		}
+
+		dateTimeData := data.DateTimeData{}
+		err = json.Unmarshal([]byte(days), &dateTimeData)
+		if err != nil {
+			app.serverErrorResponse(err, c)
+			return
+		}
+
+		for _, t := range dateTimeData.Time {
+			timeMap[t.Id] = t
+		}
 	}
 
 	for _, item := range timetable {
@@ -256,8 +258,8 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 	}
 
 	booking, err := app.models.Booking.GetAllByDate(input.Date)
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			//app.NotFoundResponse(err, c)
 			//return
 		} else {
@@ -276,8 +278,8 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 	}
 
 	rooms, err := app.models.Extras.GetFreeRooms(strings.Join(noRooms, ","))
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -286,7 +288,7 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":rooms})
+	c.JSON(http.StatusOK, gin.H{"payload": rooms})
 	return
 }
 
@@ -294,8 +296,8 @@ func (app *application) ConfirmBooking(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("bookingId"), 10, 64)
 
 	err := app.models.Booking.Confirm(id)
-	if err!=nil{
-		if err.Error()=="no affected rows"{
+	if err != nil {
+		if err.Error() == "no affected rows" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -304,7 +306,7 @@ func (app *application) ConfirmBooking(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":"booking confirmed"})
+	c.JSON(http.StatusOK, gin.H{"payload": "booking confirmed"})
 	return
 }
 
@@ -312,8 +314,8 @@ func (app *application) RejectBooking(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("bookingId"), 10, 64)
 
 	err := app.models.Booking.Delete(id)
-	if err!=nil{
-		if err.Error()=="no affected rows"{
+	if err != nil {
+		if err.Error() == "no affected rows" {
 			app.NotFoundResponse(err, c)
 			return
 		} else {
@@ -322,7 +324,7 @@ func (app *application) RejectBooking(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":"booking rejected"})
+	c.JSON(http.StatusOK, gin.H{"payload": "booking rejected"})
 	return
 }
 
@@ -336,9 +338,9 @@ func (app *application) BookRoom(c *gin.Context) {
 	inputStart, _ := time.Parse("15:04", input.StartTime)
 	inputEnd, _ := time.Parse("15:04", input.EndTime)
 
-	timetable, err := app.models.Timetables.GetByWeekDay("d"+strconv.Itoa(int(input.Date.Weekday())))
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	timetable, err := app.models.Timetables.GetByWeekDay("d" + strconv.Itoa(int(input.Date.Weekday())))
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 			//app.NotFoundResponse(err, c)
 			//return
 		} else {
@@ -347,27 +349,29 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	days, err := app.models.Timetables.GetDateTimeData(timetable[0].ScheduleBlockId)
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
-			app.NotAcceptable(err, c)
-			return
-		}
-		app.serverErrorResponse(err, c)
-		return
-	}
-
-	dateTimeData := data.DateTimeData{}
-	err = json.Unmarshal([]byte(days), &dateTimeData)
-	if err != nil {
-		app.serverErrorResponse(err, c)
-		return
-	}
-
 	timeMap := make(map[string]*data.Time)
 
-	for _, t := range dateTimeData.Time {
-		timeMap[t.Id] = t
+	if timetable != nil {
+		days, err := app.models.Timetables.GetDateTimeData(timetable[0].ScheduleBlockId)
+		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				app.NotAcceptable(err, c)
+				return
+			}
+			app.serverErrorResponse(err, c)
+			return
+		}
+
+		dateTimeData := data.DateTimeData{}
+		err = json.Unmarshal([]byte(days), &dateTimeData)
+		if err != nil {
+			app.serverErrorResponse(err, c)
+			return
+		}
+
+		for _, t := range dateTimeData.Time {
+			timeMap[t.Id] = t
+		}
 	}
 
 	for _, item := range timetable {
@@ -380,9 +384,9 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	roomBooking, err := app.models.Booking.GetAllByRoom(input.RoomId, time.Now(), time.Now().AddDate(0,0,15))
-	if err!=nil{
-		if err.Error()=="sql: no rows in result set"{
+	roomBooking, err := app.models.Booking.GetAllByRoom(input.RoomId, time.Now(), time.Now().AddDate(0, 0, 15))
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
 
 		} else {
 			app.serverErrorResponse(err, c)
@@ -406,6 +410,6 @@ func (app *application) BookRoom(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payload":insert})
+	c.JSON(http.StatusOK, gin.H{"payload": insert})
 	return
 }
