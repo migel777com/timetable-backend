@@ -55,7 +55,7 @@ func (app *application) routes() http.Handler {
 		booking.GET("", app.GetAllBooking)
 		booking.POST("/datetime", app.GetDateTimeBooking)
 
-		booking.GET("/room/:roomId", app.GetRoomBooking)
+		booking.POST("/room/:roomId", app.GetRoomBooking)
 		booking.GET("/reserver/:reserverId", app.GetReserverBooking)
 
 		booking.GET("/requests", app.GetBookingRequests)

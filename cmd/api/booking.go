@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"gin-api-template/internal/data"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -34,7 +35,33 @@ func (app *application) GetAllBooking(c *gin.Context) {
 func (app *application) GetRoomBooking(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("roomId"), 10, 64)
 
-	booking, err := app.models.Booking.GetAllByRoom(id)
+	var input data.Booking
+
+	if err := c.BindJSON(&input); err != nil {
+		app.serverErrorResponse(err, c)
+	}
+
+	currentYear, currentMonth, _ := input.Date.Date()
+	currentLocation := input.Date.Location()
+
+	firstOfMonth := time.Date(currentYear, currentMonth, 1,0,0,0, 0, currentLocation)
+	lastOfMonth := firstOfMonth.AddDate(0,1,-1)
+
+	for {
+		if firstOfMonth.Weekday() == time.Monday {
+			break
+		}
+		firstOfMonth = firstOfMonth.AddDate(0,0,-1)
+	}
+
+	for {
+		if lastOfMonth.Weekday() == time.Sunday {
+			break
+		}
+		firstOfMonth = firstOfMonth.AddDate(0,0,1)
+	}
+
+	booking, err := app.models.Booking.GetAllByRoom(id, firstOfMonth, lastOfMonth)
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
 			app.NotFoundResponse(err, c)
@@ -91,13 +118,13 @@ func (app *application) GetBookingRequests(c *gin.Context) {
 		}
 	}
 
-	bookingMap := make(map[string][]*data.Booking)
+	//bookingMap := make(map[string][]*data.Booking)
+	//
+	//for _, item := range booking {
+	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	//}
 
-	for _, item := range booking {
-		bookingMap[item.Day] = append(bookingMap[item.Day], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload":booking})
 	return
 }
 
@@ -113,13 +140,13 @@ func (app *application) GetConfirmedBooking(c *gin.Context) {
 		}
 	}
 
-	bookingMap := make(map[string][]*data.Booking)
+	//bookingMap := make(map[string][]*data.Booking)
+	//
+	//for _, item := range booking {
+	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	//}
 
-	for _, item := range booking {
-		bookingMap[item.Day] = append(bookingMap[item.Day], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload":booking})
 	return
 }
 
@@ -146,9 +173,32 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 		}
 	}
 
+	days, err := app.models.Timetables.GetDateTimeData(timetable[0].ScheduleBlockId)
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			app.NotAcceptable(err, c)
+			return
+		}
+		app.serverErrorResponse(err, c)
+		return
+	}
+
+	dateTimeData := data.DateTimeData{}
+	err = json.Unmarshal([]byte(days), &dateTimeData)
+	if err != nil {
+		app.serverErrorResponse(err, c)
+		return
+	}
+
+	timeMap := make(map[string]*data.Time)
+
+	for _, t := range dateTimeData.Time {
+		timeMap[t.Id] = t
+	}
+
 	for _, item := range timetable {
-		start, _ := time.Parse("15:04", item.ClasstimeTime)
-		end := start.Add(time.Minute*50)
+		start, _ := time.Parse("15:04", timeMap[item.ClasstimeTime].Start)
+		end, _ := time.Parse("15:04", timeMap[item.ClasstimeTime].Finish)
 
 		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
 			noRooms = append(noRooms, strconv.Itoa(int(item.RoomId)))
@@ -247,9 +297,32 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
+	days, err := app.models.Timetables.GetDateTimeData(timetable[0].ScheduleBlockId)
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			app.NotAcceptable(err, c)
+			return
+		}
+		app.serverErrorResponse(err, c)
+		return
+	}
+
+	dateTimeData := data.DateTimeData{}
+	err = json.Unmarshal([]byte(days), &dateTimeData)
+	if err != nil {
+		app.serverErrorResponse(err, c)
+		return
+	}
+
+	timeMap := make(map[string]*data.Time)
+
+	for _, t := range dateTimeData.Time {
+		timeMap[t.Id] = t
+	}
+
 	for _, item := range timetable {
-		start, _ := time.Parse("15:04", item.ClasstimeTime)
-		end := start.Add(time.Minute*50)
+		start, _ := time.Parse("15:04", timeMap[item.ClasstimeTime].Start)
+		end, _ := time.Parse("15:04", timeMap[item.ClasstimeTime].Finish)
 
 		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
 			app.BadRequest(nil, c)
@@ -257,7 +330,7 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	roomBooking, err := app.models.Booking.GetAllByRoom(input.RoomId)
+	roomBooking, err := app.models.Booking.GetAllByRoom(input.RoomId, time.Now(), time.Now().AddDate(0,0,15))
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
 
