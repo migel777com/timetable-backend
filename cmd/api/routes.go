@@ -57,6 +57,7 @@ func (app *application) routes() http.Handler {
 
 		booking.POST("/room/:roomId", app.GetRoomBooking)
 		booking.GET("/reserver/:reserverId", app.GetReserverBooking)
+		booking.POST("/reserver/between/:reserverId", app.GetReserverBetweenBooking)
 
 		booking.GET("/requests", app.GetBookingRequests)
 

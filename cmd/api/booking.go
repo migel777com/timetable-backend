@@ -58,7 +58,7 @@ func (app *application) GetRoomBooking(c *gin.Context) {
 		if lastOfMonth.Weekday() == time.Sunday {
 			break
 		}
-		firstOfMonth = firstOfMonth.AddDate(0,0,1)
+		lastOfMonth = lastOfMonth.AddDate(0,0,1)
 	}
 
 	booking, err := app.models.Booking.GetAllByRoom(id, firstOfMonth, lastOfMonth)
@@ -86,6 +86,56 @@ func (app *application) GetReserverBooking(c *gin.Context) {
 	id := c.Param("reserverId")
 
 	booking, err := app.models.Booking.GetAllByReserver(id)
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			app.NotFoundResponse(err, c)
+			return
+		} else {
+			app.serverErrorResponse(err, c)
+			return
+		}
+	}
+
+	bookingMap := make(map[string][]*data.Booking)
+
+	for _, item := range booking {
+		bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"payload":bookingMap})
+	return
+}
+
+func (app *application) GetReserverBetweenBooking(c *gin.Context) {
+	id := c.Param("reserverId")
+
+	var input data.Booking
+
+	if err := c.BindJSON(&input); err != nil {
+		app.serverErrorResponse(err, c)
+	}
+
+	currentYear, currentMonth, _ := input.Date.Date()
+	currentLocation := input.Date.Location()
+
+	firstOfMonth := time.Date(currentYear, currentMonth, 1,0,0,0, 0, currentLocation)
+	lastOfMonth := firstOfMonth.AddDate(0,1,-1)
+
+	for {
+		if firstOfMonth.Weekday() == time.Monday {
+			break
+		}
+		firstOfMonth = firstOfMonth.AddDate(0,0,-1)
+	}
+
+	for {
+		if lastOfMonth.Weekday() == time.Sunday {
+			break
+		}
+		lastOfMonth = lastOfMonth.AddDate(0,0,1)
+	}
+
+	booking, err := app.models.Booking.GetAllBetweenByReserver(id, firstOfMonth, lastOfMonth)
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
 			app.NotFoundResponse(err, c)
