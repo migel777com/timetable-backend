@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	_ "gin-api-template/cmd/api/docs"
@@ -30,7 +29,8 @@ func (app *application) routes() http.Handler {
 	//list middleware that u want to include by default
 	router.Use(
 		//enabling AllowAllOrigins = true
-		cors.Default(),
+		//cors.Default(),
+		CORSMiddleware(),
 
 		//include in prod mode
 		//gin.Recovery(),

@@ -28,7 +28,7 @@ type ExtrasModel struct {
 }
 
 func (m *ExtrasModel) GetAllGroups() ([]*Group, error){
-	stmt := `SELECT DISTINCT(group_id), name FROM schedule_timetable_groups ORDER BY group_id;`
+	stmt := `SELECT DISTINCT(name) FROM schedule_timetable_groups ORDER BY name;`
 	rows, err := m.DB.Query(stmt)
 	if err!=nil{
 		return nil, err
@@ -38,7 +38,7 @@ func (m *ExtrasModel) GetAllGroups() ([]*Group, error){
 	var groups []*Group
 	for rows.Next() {
 		g := &Group{}
-		err = rows.Scan(&g.Id, &g.Name)
+		err = rows.Scan(&g.Name)
 		if err!=nil{
 			return nil, err
 		}
