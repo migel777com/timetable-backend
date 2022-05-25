@@ -18,13 +18,11 @@ func (app *application) routes() http.Handler {
 	//this has no logger and recovery, so include it in middleware list if needed.
 	//router := gin.New()
 
-
 	//if we need to serve static uploads or return html use following
 	/*
-	router.LoadHTMLGlob("./ui/*.html")
-	router.Static("/api/serve", "./ui/")
+		router.LoadHTMLGlob("./ui/*.html")
+		router.Static("/api/serve", "./ui/")
 	*/
-
 
 	//list middleware that u want to include by default
 	router.Use(
@@ -32,9 +30,9 @@ func (app *application) routes() http.Handler {
 		//cors.Default(),
 		CORSMiddleware(),
 
-		//include in prod mode
-		//gin.Recovery(),
-		)
+	//include in prod mode
+	//gin.Recovery(),
+	)
 
 	router.GET("/healthcheck", app.Healthcheck)
 
@@ -64,8 +62,8 @@ func (app *application) routes() http.Handler {
 		secured := booking.Group("", app.auth())
 		{
 			secured.POST("/create", app.BookRoom)
-			secured.PATCH("/confirm/:bookingId", app.ConfirmBooking)
-			secured.PATCH("/reject/:bookingId", app.RejectBooking)
+			secured.POST("/confirm/:bookingId", app.ConfirmBooking)
+			secured.POST("/reject/:bookingId", app.RejectBooking)
 		}
 	}
 
@@ -74,7 +72,6 @@ func (app *application) routes() http.Handler {
 		login.POST("/office", app.OfficeAuth)
 	}
 	//users.GET("/userdata", app.auth(), app.UserData)
-
 
 	files := router.Group("/files")
 	{

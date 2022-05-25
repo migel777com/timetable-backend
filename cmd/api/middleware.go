@@ -7,7 +7,7 @@ import (
 )
 
 func (app *application) auth() gin.HandlerFunc {
-	return func (c *gin.Context) {
+	return func(c *gin.Context) {
 		if c.Request.Header["Gao-Jwt-Token"] != nil {
 
 			token, err := jwt.Parse(c.Request.Header["Gao-Jwt-Token"][0], func(token *jwt.Token) (interface{}, error) {
@@ -19,6 +19,7 @@ func (app *application) auth() gin.HandlerFunc {
 
 			if err != nil {
 				app.serverErrorResponse(err, c)
+				c.Abort()
 				return
 			}
 
@@ -30,6 +31,7 @@ func (app *application) auth() gin.HandlerFunc {
 					c.Next()
 				} else {
 					app.InvalidCredentials(nil, c)
+					c.Abort()
 					return
 				}
 			}
@@ -47,7 +49,7 @@ func CORSMiddleware() gin.HandlerFunc {
 
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Credentials", "true")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, Gao-Jwt-Token")
 		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
 
 		if c.Request.Method == "OPTIONS" {
