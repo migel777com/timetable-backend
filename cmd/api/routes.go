@@ -45,7 +45,7 @@ func (app *application) routes() http.Handler {
 
 	timetable := router.Group("timetable")
 	{
-		timetable.GET("/group/:groupId", app.GetGroupTimetable)
+		timetable.GET("/group/:group", app.GetGroupTimetable)
 		timetable.GET("/tutor/:tutorId", app.GetTutorTimetable)
 		timetable.GET("/room/:roomId", app.GetRoomTimetable)
 	}

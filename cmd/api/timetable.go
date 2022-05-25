@@ -8,12 +8,12 @@ import (
 )
 
 func (app *application) GetGroupTimetable(c *gin.Context){
-	id, _ := strconv.ParseInt(c.Param("groupId"), 10, 64)
+	group := c.Param("group")
 
-	timetable, err := app.models.Timetables.GetByGroup(id)
+	timetable, err := app.models.Timetables.GetByGroup(group)
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
-			app.InvalidCredentials(err, c)
+			app.NotFoundResponse(err, c)
 			return
 		}
 		app.serverErrorResponse(err, c)
@@ -36,7 +36,7 @@ func (app *application) GetTutorTimetable(c *gin.Context){
 	timetable, err := app.models.Timetables.GetByTutor(id)
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
-			app.InvalidCredentials(err, c)
+			app.NotFoundResponse(err, c)
 			return
 		}
 		app.serverErrorResponse(err, c)
@@ -59,7 +59,7 @@ func (app *application) GetRoomTimetable(c *gin.Context){
 	timetable, err := app.models.Timetables.GetByRoom(id)
 	if err!=nil{
 		if err.Error()=="sql: no rows in result set"{
-			app.InvalidCredentials(err, c)
+			app.NotFoundResponse(err, c)
 			return
 		}
 		app.serverErrorResponse(err, c)
