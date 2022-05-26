@@ -72,13 +72,13 @@ func (app *application) GetRoomBooking(c *gin.Context) {
 		}
 	}
 
-	bookingMap := make(map[string][]*data.Booking)
+	//bookingMap := make(map[string][]*data.Booking)
+	//
+	//for _, item := range booking {
+	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	//}
 
-	for _, item := range booking {
-		bookingMap[item.Day] = append(bookingMap[item.Day], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": booking})
 	return
 }
 
@@ -96,13 +96,13 @@ func (app *application) GetReserverBooking(c *gin.Context) {
 		}
 	}
 
-	bookingMap := make(map[string][]*data.Booking)
+	//bookingMap := make(map[string][]*data.Booking)
+	//
+	//for _, item := range booking {
+	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	//}
 
-	for _, item := range booking {
-		bookingMap[item.Day] = append(bookingMap[item.Day], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": booking})
 	return
 }
 
@@ -146,13 +146,13 @@ func (app *application) GetReserverBetweenBooking(c *gin.Context) {
 		}
 	}
 
-	bookingMap := make(map[string][]*data.Booking)
+	//bookingMap := make(map[string][]*data.Booking)
+	//
+	//for _, item := range booking {
+	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	//}
 
-	for _, item := range booking {
-		bookingMap[item.Day] = append(bookingMap[item.Day], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": booking})
 	return
 }
 
