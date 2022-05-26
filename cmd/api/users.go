@@ -25,7 +25,24 @@ func (app *application) OfficeAuth(c *gin.Context){
 	}
 	c.JSON(http.StatusOK, gin.H{"payload":newJWT})
 	return
+}
 
+func (app *application) isAdmin(c *gin.Context) {
+	id := c.Param("id")
+
+	admin, err := app.models.Users.GetAdmin(id)
+	if err!=nil{
+		if err.Error()=="sql: no rows in result set"{
+			app.NotFoundResponse(err, c)
+			return
+		} else {
+			app.serverErrorResponse(err, c)
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"payload":admin})
+	return
 }
 
 

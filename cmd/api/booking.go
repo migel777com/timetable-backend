@@ -329,6 +329,10 @@ func (app *application) RejectBooking(c *gin.Context) {
 }
 
 func (app *application) BookRoom(c *gin.Context) {
+	claims, _ := extractClaims(app.config.Jwtkey, c.Request.Header["Gao-Jwt-Token"][0])
+	email := claims["email"].(string)
+
+
 	var input data.Booking
 
 	if err := c.BindJSON(&input); err != nil {
@@ -404,7 +408,7 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	insert, err := app.models.Booking.Insert(input.Room, input.Reserver, input.ReserverInfo, input.Day, input.StartTime, input.EndTime, input.Reason, input.RoomId, input.ReserverId, input.Date)
+	insert, err := app.models.Booking.Insert(input.Room, input.Reserver, input.ReserverInfo, email, input.Day, input.StartTime, input.EndTime, input.Reason, input.RoomId, input.ReserverId, input.Date)
 	if err != nil {
 		app.serverErrorResponse(err, c)
 		return

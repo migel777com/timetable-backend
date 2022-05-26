@@ -72,6 +72,8 @@ func (app *application) routes() http.Handler {
 	{
 		login.POST("/office", app.OfficeAuth)
 	}
+	router.GET("/isAdmin/:id", app.auth(), app.isAdmin)
+	
 	//users.GET("/userdata", app.auth(), app.UserData)
 
 	files := router.Group("/files")
