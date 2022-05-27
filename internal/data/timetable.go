@@ -36,7 +36,7 @@ type TimetableModel struct {
 }
 
 func (m *TimetableModel) GetByWeekDay(weekDay string) ([]*Timetable, error) {
-	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, elective_id, subject_id FROM schedule_timetable WHERE classtime_day = ? AND classtime_time IS NOT NULL AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly');`
+	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, IFNULL(elective_id, 0), IFNULL(subject_id, 0) FROM schedule_timetable WHERE classtime_day = ? AND classtime_time IS NOT NULL AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly');`
 	rows, err := m.DB.Query(stmt, weekDay)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (m *TimetableModel) GetByWeekDay(weekDay string) ([]*Timetable, error) {
 }
 
 func (m *TimetableModel) GetByGroup(group string) ([]*Timetable, error) {
-	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, elective_id, subject_id FROM schedule_timetable WHERE id IN (SELECT timetable_id from schedule_timetable_groups WHERE name = ?) AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
+	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, IFNULL(elective_id, 0), IFNULL(subject_id, 0) FROM schedule_timetable WHERE id IN (SELECT timetable_id from schedule_timetable_groups WHERE name = ?) AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
 	rows, err := m.DB.Query(stmt, group)
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func (m *TimetableModel) GetByGroup(group string) ([]*Timetable, error) {
 }
 
 func (m *TimetableModel) GetByTutor(tutorId int64) ([]*Timetable, error) {
-	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, elective_id, subject_id FROM schedule_timetable WHERE tutor_id = ? AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
+	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, IFNULL(elective_id, 0), IFNULL(subject_id, 0) FROM schedule_timetable WHERE tutor_id = ? AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
 	rows, err := m.DB.Query(stmt, tutorId)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (m *TimetableModel) GetByTutor(tutorId int64) ([]*Timetable, error) {
 }
 
 func (m *TimetableModel) GetByRoom(roomId int64) ([]*Timetable, error) {
-	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, elective_id, subject_id FROM schedule_timetable WHERE room_id = ? AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
+	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, IFNULL(elective_id, 0), IFNULL(subject_id, 0) FROM schedule_timetable WHERE room_id = ? AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
 	rows, err := m.DB.Query(stmt, roomId)
 	if err != nil {
 		return nil, err
