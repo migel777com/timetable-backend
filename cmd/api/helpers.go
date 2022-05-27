@@ -30,6 +30,7 @@ func GenerateJWT(jwtkey []byte, user *data.User) (string, error) {
 
 	claims["authorized"] = true
 	claims["organization"] = user.Organization
+	claims["email"] = user.Email
 
 	tokenString, err := token.SignedString(jwtkey)
 
