@@ -22,13 +22,13 @@ func (app *application) GetAllBooking(c *gin.Context) {
 		}
 	}
 
-	bookingMap := make(map[string][]*data.Booking)
+	//bookingMap := make(map[string][]*data.Booking)
+	//
+	//for _, item := range booking {
+	//	bookingMap[item.Day] = append(bookingMap[item.Day], item)
+	//}
 
-	for _, item := range booking {
-		bookingMap[item.Day] = append(bookingMap[item.Day], item)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"payload": bookingMap})
+	c.JSON(http.StatusOK, gin.H{"payload": booking})
 	return
 }
 
@@ -331,7 +331,6 @@ func (app *application) RejectBooking(c *gin.Context) {
 func (app *application) BookRoom(c *gin.Context) {
 	claims, _ := extractClaims(app.config.Jwtkey, c.Request.Header["Gao-Jwt-Token"][0])
 	email := claims["email"].(string)
-
 
 	var input data.Booking
 
