@@ -387,7 +387,7 @@ func (app *application) BookRoom(c *gin.Context) {
 		}
 	}
 
-	roomBooking, err := app.models.Booking.GetAllByRoom(input.RoomId, time.Now(), time.Now().AddDate(0, 0, 15))
+	roomBooking, err := app.models.Booking.GetAllByRoomDate(input.RoomId, input.Date)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 
