@@ -1,6 +1,8 @@
 package data
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type Group struct {
 	Id int64 `json:"group_id"`
@@ -115,8 +117,8 @@ func (m *ExtrasModel) GetAllRooms() ([]*Room, error){
 }
 
 func (m *ExtrasModel) GetFreeRooms(noRooms string) ([]*Room, error){
-	stmt := `SELECT id, code, name, floor, seats, type FROM schedule_room WHERE id NOT IN (?) ORDER BY id;`
-	rows, err := m.DB.Query(stmt, noRooms)
+	stmt := `SELECT id, code, name, floor, seats, type FROM schedule_room WHERE id NOT IN (`+ noRooms +`) ORDER BY id;`
+	rows, err := m.DB.Query(stmt)
 	if err!=nil{
 		return nil, err
 	}
