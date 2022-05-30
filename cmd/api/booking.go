@@ -272,7 +272,7 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 		start, _ := time.Parse("15:04", item.StartTime)
 		end, _ := time.Parse("15:04", item.EndTime)
 
-		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) {
+		if ((inputStart.After(start) || inputStart.Equal(start)) && inputStart.Before(end)) || (inputEnd.After(start) && (inputEnd.Before(end) || inputEnd.Equal(end))) || (inputStart.Before(start) && inputEnd.After(end)) || (inputStart.Equal(start) && inputEnd.Equal(end)) {
 			noRooms = append(noRooms, strconv.Itoa(int(item.RoomId)))
 		}
 	}
