@@ -122,6 +122,35 @@ func (m *TimetableModel) GetByTutor(tutorId int64) ([]*Timetable, error) {
 	return timetable, nil
 }
 
+func (m *TimetableModel) GetByTutorEmail(email string) ([]*Timetable, error) {
+	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, IFNULL(elective_id, 0), IFNULL(subject_id, 0) FROM schedule_timetable WHERE tutor_id = (SELECT id FROM teacher WHERE email = ?) AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
+	rows, err := m.DB.Query(stmt, email)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var timetable []*Timetable
+	for rows.Next() {
+		t := &Timetable{}
+		err = rows.Scan(&t.Id, &t.ScheduleBlockId, &t.Subject, &t.Tutor, &t.TutorId, &t.Room, &t.RoomId, &t.LessonType, &t.RoomType, &t.ClasstimeDay, &t.ClasstimeTime, &t.ElectiveId, &t.SubjectId)
+		if err != nil {
+			return nil, err
+		}
+		timetable = append(timetable, t)
+	}
+
+	if len(timetable) == 0 {
+		return nil, sql.ErrNoRows
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return timetable, nil
+}
+
 func (m *TimetableModel) GetByRoom(roomId int64) ([]*Timetable, error) {
 	stmt := `SELECT id, schedule_block_id, subject, tutor, tutor_id, IFNULL(room, ''), IFNULL(room_id, 0), IFNULL(lesson_type, ''), IFNULL(room_type, ''), classtime_day, classtime_time, IFNULL(elective_id, 0), IFNULL(subject_id, 0) FROM schedule_timetable WHERE room_id = ? AND schedule_block_id IN (SELECT id FROM schedule_block WHERE active = 1 AND days_type = 'weekly') AND classtime_day IS NOT NULL AND classtime_time IS NOT NULL;`
 	rows, err := m.DB.Query(stmt, roomId)

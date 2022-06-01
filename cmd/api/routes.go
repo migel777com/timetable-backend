@@ -45,6 +45,7 @@ func (app *application) routes() http.Handler {
 	{
 		timetable.GET("/group/:group", app.GetGroupTimetable)
 		timetable.GET("/tutor/:tutorId", app.GetTutorTimetable)
+		timetable.GET("/tutor/email/:email", app.GetTutorEmailTimetable)
 		timetable.GET("/room/:roomId", app.GetRoomTimetable)
 	}
 
