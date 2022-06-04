@@ -38,7 +38,8 @@ func (app *application) GetRoomBooking(c *gin.Context) {
 	var input data.Booking
 
 	if err := c.BindJSON(&input); err != nil {
-		app.serverErrorResponse(err, c)
+		app.BadRequest(err, c)
+		return
 	}
 
 	currentYear, currentMonth, _ := input.Date.Date()
@@ -112,7 +113,8 @@ func (app *application) GetReserverBetweenBooking(c *gin.Context) {
 	var input data.Booking
 
 	if err := c.BindJSON(&input); err != nil {
-		app.serverErrorResponse(err, c)
+		app.BadRequest(err, c)
+		return
 	}
 
 	currentYear, currentMonth, _ := input.Date.Date()
@@ -204,13 +206,22 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 	var input data.Booking
 
 	if err := c.BindJSON(&input); err != nil {
-		app.serverErrorResponse(err, c)
+		app.BadRequest(err, c)
+		return
 	}
 
 	var noRooms []string
 
-	inputStart, _ := time.Parse("15:04", input.StartTime)
-	inputEnd, _ := time.Parse("15:04", input.EndTime)
+	inputStart, err := time.Parse("15:04", input.StartTime)
+	if err != nil {
+		app.BadRequest(err, c)
+		return
+	}
+	inputEnd, err := time.Parse("15:04", input.EndTime)
+	if err != nil {
+		app.BadRequest(err, c)
+		return
+	}
 
 	timetable, err := app.models.Timetables.GetByWeekDay("d" + strconv.Itoa(int(input.Date.Weekday())))
 	if err != nil {
@@ -277,6 +288,10 @@ func (app *application) GetDateTimeBooking(c *gin.Context) {
 		}
 	}
 
+	if len(noRooms) == 0 {
+		noRooms = append(noRooms, "0")
+	}
+
 	rooms, err := app.models.Extras.GetFreeRooms(strings.Join(noRooms, ","))
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
@@ -335,7 +350,8 @@ func (app *application) BookRoom(c *gin.Context) {
 	var input data.Booking
 
 	if err := c.BindJSON(&input); err != nil {
-		app.serverErrorResponse(err, c)
+		app.BadRequest(err, c)
+		return
 	}
 
 	inputStart, _ := time.Parse("15:04", input.StartTime)
